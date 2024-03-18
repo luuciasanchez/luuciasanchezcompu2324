@@ -1,5 +1,5 @@
 # ================================================================================
-# ANIMACION SISTEMA SOLAR
+# ANIMACION SISTEMA SOLAR de lucia
 #
 # Genera una animación a partir de un fichero de datos con las posiciones
 # de los planetas en diferentes instantes de tiempo.
