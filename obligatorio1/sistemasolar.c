@@ -4,12 +4,13 @@
 #define G 6.67e-11
 #define Ms 1.99e30
 #define c 1.496e11
+#define NUMPLANETAS 6
 
 int main()
 {
     int i, j, k;
     double h, energia, l, p, t, tf;
-    double m[6], x[6],  y[6], vx[6], vy[6], a1x[6], a1y[6], wx[6], wy[6], aux[6];
+    double m[NUMPLANETAS], x[NUMPLANETAS],  y[NUMPLANETAS], vx[NUMPLANETAS], vy[NUMPLANETAS], a1x[NUMPLANETAS], a1y[NUMPLANETAS], wx[NUMPLANETAS], wy[NUMPLANETAS], aux[NUMPLANETAS];
     
 
     //defino valores de las masas, posiciones iniciales y velocidades iniciales
@@ -72,11 +73,13 @@ int main()
     f1=fopen("datosdelsistemasolar.txt","w");
     f2=fopen("energiayl.txt","w");
     f3=fopen("periodos.txt","w");
+
     t=0.0;
     h=0.01;
     //tf=5*24*3600;
     tf=100;
     //tf=tf*sqrt((G*Ms)/pow(c,3));
+
     //calculo las aceleraciones a partir de la suma de fuerzas sobre cada partícula i
     for(i=0;i<6;i++) 
     {
@@ -87,8 +90,8 @@ int main()
     for (i=0;i<6;i++) {
         for (j=0;j<6;j++) {
             if (i != j) {
-                a1x[i] = a1x[i] - m[j] * (x[i] - x[j]) * pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5);
-                a1y[i] = a1y[i] - m[j] * (y[i] - y[j]) * pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5);
+                a1x[i] = a1x[i] - m[j] * (x[i] - x[j]) / pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5);
+                a1y[i] = a1y[i] - m[j] * (y[i] - y[j]) / pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5);
             }
         }
     }
@@ -150,8 +153,8 @@ int main()
         for (i=0;i<6;i++) {
             for (j = 0; j < 6; j++) {
                 if (i != j) {
-                   a1x[i] =  (-m[j]) * ((x[i] - x[j])) * (pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5));
-                   a1y[i] =  (-m[j]) * ((y[i] - y[j])) * (pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5));
+                   a1x[i] =  (-m[j]) * ((x[i] - x[j])) / (pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5));
+                   a1y[i] =  (-m[j]) * ((y[i] - y[j])) / (pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5));
                 }
             }
         }
