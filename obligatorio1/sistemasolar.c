@@ -52,6 +52,9 @@ int main()
     vy[3]=29800;
     vy[4]=24100;
     vy[5]=13100;
+
+    //for(i=0;i<6;i++)
+    //    vy[i]=vy[i]/1000;
     //vy[6]=9700.0;
     //vy[5]=6800.0;
     //vy[5]=5400.0;
@@ -63,6 +66,8 @@ int main()
     {
         m[i]=m[i]/Ms;
         x[i]=x[i]/c;
+        y[i]=y[i]/c;
+        vx[i]=vx[i]*sqrt(c/(G*Ms));
         vy[i]=vy[i]*sqrt(c/(G*Ms));
     }
     //abro un archivo para escribir los datos x-y de cada planeta
@@ -75,7 +80,7 @@ int main()
     t=0.0;
     h=0.01;
     //tf=5*24*3600;
-    tf=100;
+    tf=1000;
     //tf=tf*sqrt((G*Ms)/pow(c,3));
     //calculo las aceleraciones a partir de la suma de fuerzas sobre cada partícula i
     for(i=0;i<6;i++) 
@@ -87,8 +92,8 @@ int main()
     for (i=0;i<6;i++) {
         for (j=0;j<6;j++) {
             if (i != j) {
-                a1x[i] = a1x[i] - m[j] * (x[i] - x[j]) * pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5);
-                a1y[i] = a1y[i] - m[j] * (y[i] - y[j]) * pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), -1.5);
+                a1x[i] = a1x[i] - m[j] * (x[i] - x[j]) / pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5);
+                a1y[i] = a1y[i] - m[j] * (y[i] - y[j]) / pow(pow((x[i] - x[j]), 2) + pow((y[i] - y[j]), 2), 1.5);
             }
         }
     }
@@ -109,7 +114,7 @@ int main()
         
     
 
-
+        """
         //calcular y escribir en el segundo archivo la energía y el momento
         energia = 0.0;
         l = 0.0;
@@ -123,11 +128,13 @@ int main()
             }
         }
         fprintf(f2, "%lf %lf\n", energia, t);
-
+        """
         //hago un bucle if para que nos dé los periodos orbitales de los planetas
         //y los escriba en el tercer fichero
         //para ello impongo las condiciones de que "y" esté en un intervalo muy proximo a 0, x sea positivo y
         //t sea mayor que un cierto numero de iteraciones para evitar el instante inicial
+
+        """
         for (i = 1; i <= 6; i++) {
             if (aux[i] == 0) {
                 if (((y[i] < 0.01 && y[i] > -0.01) && (x[i] > 0)) && (t > 50)) {
@@ -136,7 +143,7 @@ int main()
                 }
             }
         }
-
+        """
     
         //calculo las posiciones x(t+h), y(t+h) y las funciones w
         for (i = 0; i < 6; i++) {
