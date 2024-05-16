@@ -1,10 +1,12 @@
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+#define NUMPLANETS 8 // NUMBER OF PLANETS
+
 /////////////////////////////
 //Programa que simula el comportamiento del sistema solar 
 ////////////////////////////
-
 
 
 void cambiounidades (double *vx, double *vy, double *m, int n);  //Función para cambiar las unidades de las condiciones iniciales 
@@ -13,11 +15,11 @@ void posicion (double *rx, double *ry, double *vx, double *vy, double *ax, doubl
 void velocidad (double *vx, double *vy, double *wx, double *wy, double *ax, double *ay, int n, double hmedio); //Función pa sacar v(t+h)
 double cinetica (double *vx, double *vy, double *m, double T, int n); //Función que devuelve la energía cinética total del sistema
 double potencial (double *rx, double *ry, double *m, double V, int n); //Función que devuelve la energía cinética total del sistema
+
 int main(void)
 { 
     double h, hmedio, energia, t, tmax; //h es el paso, t el tiempo y tmax el tope de tiempo que estara el programa simulando
     int i;  //contador
-    int n; //n es número de cuerpos
     int impresion; //Esta variable va a decidir cuando se hace print en el fichero de las posiciones nuevas
     double *rx, *vx, *ax, *ry, *vy, *ay, *wx, *wy, *m; //posiciones, aceleraciones, velocidades, momentos angulares, masa
     double *contador, *periodo, *kx, *ky, dist; //Un contador y el periodo de cada cuerpo. Las k serán las posiciones iniciales de cada cuerpo. Dist es distancia entre dos cuerpos
@@ -33,73 +35,76 @@ int main(void)
     //Definimos parámetros
     h=0.05;
     hmedio=0.5*h;
-    n=10; 
     tmax=1600.0;
     impresion=0;
 
-    for(i=0; i<n; i++) //Inicializo el contador
+    // Pido memoria para el contador
+    vx = (double*) malloc(NUMPLANETS*sizeof(double));
+    contador = (double*) malloc(NUMPLANETS*sizeof(double));
+
+    for(i=0; i<NUMPLANETS; i++) //Inicializo el contador
     {
         contador[i]=0.0;
     }
 
-    //Ahora tenemos que asignar memoria dinámica a los vectores
-    rx = (double*) malloc(n*sizeof(double));
-    ry = (double*) malloc(n*sizeof(double));
-    vx = (double*) malloc(n*sizeof(double));
-    vy = (double*) malloc(n*sizeof(double));
-    ax = (double*) malloc(n*sizeof(double));
-    ay = (double*) malloc(n*sizeof(double));
-    wx = (double*) malloc(n*sizeof(double));
-    wy = (double*) malloc(n*sizeof(double));
-    m = (double*) malloc(n*sizeof(double));
-    contador = (double*) malloc(n*sizeof(double));
-    periodo = (double*) malloc(n*sizeof(double));
-    kx = (double*) malloc(n*sizeof(double));
-    ky = (double*) malloc(n*sizeof(double));
     
+    //Ahora tenemos que asignar memoria dinámica a los vectores
+    rx = (double*) malloc(NUMPLANETS*sizeof(double));
+    ry = (double*) malloc(NUMPLANETS*sizeof(double));
+    vx = (double*) malloc(NUMPLANETS*sizeof(double));
+    vy = (double*) malloc(NUMPLANETS*sizeof(double));
+    ax = (double*) malloc(NUMPLANETS*sizeof(double));
+    ay = (double*) malloc(NUMPLANETS*sizeof(double));
+    wx = (double*) malloc(NUMPLANETS*sizeof(double));
+    wy = (double*) malloc(NUMPLANETS*sizeof(double));
+    m = (double*) malloc(NUMPLANETS*sizeof(double));
+    periodo = (double*) malloc(NUMPLANETS*sizeof(double));
+    kx = (double*) malloc(NUMPLANETS*sizeof(double));
+    ky = (double*) malloc(NUMPLANETS*sizeof(double));
+
     //leemos las condiciones iniciales
-    for(i=0; i<n; i++)
+    for(i=0; i<NUMPLANETS; i++)
     {
         fscanf(fcond, "%lf\t%lf\t%lf\t%lf\t%lf", &(m[i]), &(rx[i]), &(ry[i]), &(vx[i]), &(vy[i]));
     }
     
     //Tenemos que cambiar las unidades de las condiciones iniciales a las que usaremos en la simulación, no cambiamos r que ya viene en Au
-    cambiounidades(vx,vy,m,n);
+    cambiounidades(vx,vy,m,NUMPLANETS);
     
-    for(i=0;i<n;i++) //Guardamos las posiciones iniciales de cada cuerpo, necesarias para sacar el periodo despues
+    for(i=0;i<NUMPLANETS;i++) //Guardamos las posiciones iniciales de cada cuerpo, necesarias para sacar el periodo despues
     {
         kx[i]=rx[i];
         ky[i]=ry[i];
     }
     //Ahora escribimos las primeras posiciones (las iniciales) en el fichero de posiciones
-    for(i=0;i<n;i++)
+    for(i=0;i<NUMPLANETS;i++)
     {
         fprintf(fposiciones, "%e,\t%e\n", rx[i], ry[i]);
     }
     fprintf(fposiciones, "\n"); //Aquí introduzco un salto de línea para dejar un espacio entre cada tanda de posiciones
 
     //Lo suyo ahora sería calcular las aceleraciones para el tiempo inicial a partir de las fuerzas entre cuerpos
-    aceleracion(rx,ry,ax,ay,m,n);
+    aceleracion(rx,ry,ax,ay,m,NUMPLANETS);
     
     //Ahora vamos a comenzar un bucle while que ira avanzando en el tiempo de h en h y repitiendo el algoritmo de Verlet
     t=0.0+h;
     while(t<tmax)
     {
-        T=cinetica(vx,vy,m,T,n); //Aquí saco las energias para este t antes de sacar las variables en t+h
-        V=potencial(rx,ry,m,V,n);
+        T=cinetica(vx,vy,m,T,NUMPLANETS); //Aquí saco las energias para este t antes de sacar las variables en t+h
+        V=potencial(rx,ry,m,V,NUMPLANETS);
         energia=T+V;
 
-        posicion(rx, ry, vx, vy, ax, ay, wx, wy, n, hmedio, h); //Saco w(t) y r(t+h)
+        posicion(rx, ry, vx, vy, ax, ay, wx, wy, NUMPLANETS, hmedio, h); //Saco w(t) y r(t+h)
 
-        aceleracion(rx, ry, ax, ay, m, n); //Ahora saco a(t+h)
+        aceleracion(rx, ry, ax, ay, m, NUMPLANETS); //Ahora saco a(t+h)
 
-        velocidad(vx, vy, wx, wy, ax, ay, n, hmedio); //Aquí saco v(t+h) usando lo anterior
+        velocidad(vx, vy, wx, wy, ax, ay, NUMPLANETS, hmedio); //Aquí saco v(t+h) usando lo anterior
 
         //Ahora voy a escribir en fichero las nuevas posiciones halladas para t+h
         impresion++;
         if(impresion%5==0)
         {
-            for(i=0;i<n;i++)
+            for(i=0;i<NUMPLANETS;i++)
             {
                 fprintf(fposiciones, "%e,\t%e\n", rx[i], ry[i]);
             }
@@ -112,7 +117,7 @@ int main(void)
         //Vamos a hacer una comprobación para conseguir el periodo de cada planeta, comprobaremos para cada cuerpo cuanto tiempo pasa para acercarse a un punto
         //por donde ya pasó lo suficiente como para considerar que se dió una vuelta completa.
 
-        for(i=1;i<n-3;i++) //En este for solo tendre en cuenta hasta saturno porque los otros planetas tienen orbitas muy grandes y necesitan un rango mayor de dist
+        for(i=1;i<NUMPLANETS-3;i++) //En este for solo tendre en cuenta hasta saturno porque los otros planetas tienen orbitas muy grandes y necesitan un rango mayor de dist
         {
             dist=sqrt(pow(kx[i]-rx[i],2)+pow(ky[i]-ry[i],2));
             if(dist<0.08 && t>1.0 && contador[i]<1)
@@ -124,7 +129,7 @@ int main(void)
             }
         }
 
-        for(i=n-3;i<n;i++) //En este for solo tendre en cuenta los tres últimos cuerpos y les dare un rango mayor
+        for(i=NUMPLANETS-3;i<NUMPLANETS;i++) //En este for solo tendre en cuenta los tres últimos cuerpos y les dare un rango mayor
         {
             dist=sqrt(pow(kx[i]-rx[i],2)+pow(ky[i]-ry[i],2));
             if(dist<0.5 && t>10.0 && contador[i]<1)
@@ -168,7 +173,7 @@ void cambiounidades(double *vx, double *vy, double *m, int n)
 
     Ms=1988500e24;
 
-        for(i=0;i<n;i++)  //Las cond iniciales vienen en Au, Au/dia y kg, cambiamos a lo que nos dice el pdf (r ya esta asi que no se toca)
+        for(i=0;i<NUMPLANETS;i++)  //Las cond iniciales vienen en Au, Au/dia y kg, cambiamos a lo que nos dice el pdf (r ya esta asi que no se toca)
     {
         m[i]/=Ms;
         vx[i]=vx[i]*58.151;
@@ -186,7 +191,7 @@ void aceleracion (double *rx, double *ry, double *ax, double *ay, double *m, int
 
 
     i=0;
-    while(i<n) //En este while vamos a calcular la aceleración de un cuerpo i debido a la influencia de otro cuerpo j y a sumarlas para obtener la total
+    while(i<NUMPLANETS) //En este while vamos a calcular la aceleración de un cuerpo i debido a la influencia de otro cuerpo j y a sumarlas para obtener la total
     {
         ax[i]=0.0;  //Comienzo incializando la aceleración del cuerpo a 0 por si acaso
         ay[i]=0.0;
@@ -224,12 +229,12 @@ void posicion (double *rx, double *ry, double *vx, double *vy, double *ax, doubl
 {
     int i; //Contador
 
-    for(i=0;i<n;i++) //Bucle para calcular w(t)
+    for(i=0;i<NUMPLANETS;i++) //Bucle para calcular w(t)
     {
         wx[i]=vx[i]+hmedio*ax[i];
         wy[i]=vy[i]+hmedio*ay[i];
     }
-    for(i=0;i<n;i++) //Bucle pa sacar r(t+h)
+    for(i=0;i<NUMPLANETS;i++) //Bucle pa sacar r(t+h)
     {
         rx[i]=rx[i]+h*wx[i];
         ry[i]=ry[i]+h*wy[i];
@@ -241,7 +246,7 @@ void velocidad (double *vx, double *vy, double *wx, double *wy, double *ax, doub
 {
     int i; //Contador
 
-    for(i=0;i<n;i++)
+    for(i=0;i<NUMPLANETS;i++)
     {
         vx[i]=wx[i]+hmedio*ax[i];
         vy[i]=wy[i]+hmedio*ay[i];
@@ -254,7 +259,7 @@ double cinetica (double *vx, double *vy, double *m, double T, int n)
     int i; //Contador
 
     T=0.0;
-    for(i=0;i<n;i++) //Con este for saco las energías cinéticas
+    for(i=0;i<NUMPLANETS;i++) //Con este for saco las energías cinéticas
     {
         T+=0.5*m[i]*(pow(vx[i],2)+pow(vy[i],2));
     }
@@ -270,7 +275,7 @@ double potencial (double *rx, double *ry, double *m, double V, int n)
 
     V=0.0;
     i=0;
-    while(i<n) //While para sacar el potencial de un cuerpo i
+    while(i<NUMPLANETS) //While para sacar el potencial de un cuerpo i
     {
         j=0;
         while(j<n) //Aqui consideramos cada una de las aportaciones de cada cuerpo j al potencial total
