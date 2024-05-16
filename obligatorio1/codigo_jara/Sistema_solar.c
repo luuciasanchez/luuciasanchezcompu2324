@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define NUMPLANETS 8 // NUMBER OF PLANETS
+#define NUMPLANETS 10 // NUMBER OF PLANETS
 
 /////////////////////////////
 //Programa que simula el comportamiento del sistema solar 
